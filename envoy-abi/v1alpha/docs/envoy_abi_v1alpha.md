@@ -1,7 +1,25 @@
 # Table of contents
 
-* Types
-* Modules
+* [Types](#types)
+    * [`wasmresult`](#wasmresult)
+    * [`filterheadersstatus`](#filterheadersstatus)
+    * [`filterdatastatus`](#filterdatastatus)
+    * [`filtertrailersstatus`](#filtertrailersstatus)
+    * [`filtermetadatastatus`](#filtermetadatastatus)
+    * [`headermaptype`](#headermaptype)
+    * [`buffertype`](#buffertype)
+    * [`bufferflags`](#bufferflags)
+    * [`memorysize`](#memorysize)
+    * [`mapsize`](#mapsize)
+    * [`contextid`](#contextid)
+    * [`token`](#token)
+    * [`metric`](#metric)
+    * [`metrictype`](#metrictype)
+    * [`boolean`](#boolean)
+    * [`timestamp`](#timestamp)
+    * [`grpcstatus`](#grpcstatus)
+    * [`loglevel`](#loglevel)
+* [Modules](#modules)
   * [`envoy_extension`](#envoy_extension) - `ABI` implemented by `Envoy Wasm extensions`
     * [`proxy_on_start`](#proxy_on_start)
     * [`proxy_validate_configuration`](#proxy_validate_configuration)
