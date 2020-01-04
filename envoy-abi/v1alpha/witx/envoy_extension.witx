@@ -1,4 +1,4 @@
-;; ABI of Envoy Wasm extension.
+;; ABI implemented by Envoy Wasm extensions.
 ;;
 ;; This is a `witx` file. See [here](https://github.com/WebAssembly/WASI/tree/master/docs/witx.md)
 ;; for an explanation of what that means.
