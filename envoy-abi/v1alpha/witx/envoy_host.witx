@@ -1,0 +1,611 @@
+;; ABI of Envoy as a host of Wasm extension.
+;;
+;; This is a `witx` file. See [here](https://github.com/WebAssembly/WASI/tree/master/docs/witx.md)
+;; for an explanation of what that means.
+
+(use "typenames.witx")
+
+(module $envoy
+
+  ;;; Linear memory to be accessed by ABI functions that need it.
+  (import "memory" (memory))
+
+  ;;; Configuration and Status.
+
+  ;;; extern "C" WasmResult proxy_get_configuration(const char** configuration_ptr,
+  ;;;                                               size_t* configuration_size);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_get_configuration")
+    ;;; TODO(docs)
+    (param $configuration_ptr (@witx pointer (@witx pointer char8)))
+    ;;; TODO(docs)
+    (param $configuration_size (@witx pointer $memorysize))
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_get_status(uint32_t* status_code_ptr, const char** message_ptr,
+  ;;;                                        size_t* message_size);
+  ;;; Results status details for any previous ABI call and onGrpcClose.
+  (@interface func (export "proxy_get_status")
+    ;;; TODO(docs)
+    (param $status_code_ptr (@witx pointer $wasmresult))
+    ;;; TODO(docs)
+    (param $message_ptr (@witx pointer (@witx pointer char8)))
+    ;;; TODO(docs)
+    (param $message_size (@witx pointer $memorysize))
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; Logging
+
+  ;;; extern "C" WasmResult proxy_log(LogLevel level, const char* logMessage, size_t messageSize);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_log")
+    ;;; TODO(docs)
+    (param $level $loglevel)
+    ;;; TODO(docs)
+    (param $logMessage (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $messageSize $memorysize)
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; Timer
+
+  ;;; extern "C" WasmResult proxy_set_tick_period_milliseconds(uint32_t millisecond);
+  ;;; Timer (must be called from a root context, e.g. onStart, onTick).
+  (@interface func (export "proxy_set_tick_period_milliseconds")
+    ;;; TODO(docs)
+    (param $millisecond u32)
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; Time
+
+  ;;; extern "C" WasmResult proxy_get_current_time_nanoseconds(uint64_t* nanoseconds);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_get_current_time_nanoseconds")
+    ;;; TODO(docs)
+    (param $nanoseconds (@witx pointer $timestamp))
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; State accessors
+
+  ;;; extern "C" WasmResult proxy_get_property(const char* path_ptr, size_t path_size,
+  ;;;                                          const char** value_ptr_ptr, size_t* value_size_ptr);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_get_property")
+    ;;; TODO(docs)
+    (param $path_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $path_size $memorysize)
+    ;;; TODO(docs)
+    (param $value_ptr_ptr (@witx pointer (@witx pointer char8)))
+    ;;; TODO(docs)
+    (param $value_size_ptr (@witx pointer $memorysize))
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_set_property(const char* path_ptr, size_t path_size,
+  ;;;                                          const char* value_ptr, size_t value_size);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_set_property")
+    ;;; TODO(docs)
+    (param $path_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $path_size $memorysize)
+    ;;; TODO(docs)
+    (param $value_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $value_size $memorysize)
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; System
+
+  ;;; extern "C" WasmResult proxy_set_effective_context(uint32_t effective_context_id);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_set_effective_context")
+    ;;; TODO(docs)
+    (param $effective_context_id $contextid)
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_done();
+  ;;; TODO(docs)
+  (@interface func (export "proxy_done")
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; Metrics
+
+  ;;; extern "C" WasmResult proxy_define_metric(MetricType type, const char* name_ptr, size_t name_size,
+  ;;;                                           uint32_t* metric_id);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_define_metric")
+    ;;; TODO(docs)
+    (param $type $metrictype)
+    ;;; TODO(docs)
+    (param $name_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $name_size $memorysize)
+    ;;; TODO(docs)
+    (param $metric_id (@witx pointer $metric))
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_increment_metric(uint32_t metric_id, int64_t offset);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_increment_metric")
+    ;;; TODO(docs)
+    (param $metric_id $metric)
+    ;;; TODO(docs)
+    (param $offset s64)
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_record_metric(uint32_t metric_id, uint64_t value);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_record_metric")
+    ;;; TODO(docs)
+    (param $metric_id $metric)
+    ;;; TODO(docs)
+    (param $value u64)
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_get_metric(uint32_t metric_id, uint64_t* result);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_get_metric")
+    ;;; TODO(docs)
+    (param $metric_id $metric)
+    ;;; TODO(docs)
+    (param $value (@witx pointer u64))
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; Continue/Reply/Route
+
+  ;;; extern "C" WasmResult proxy_continue_request();
+  ;;; TODO(docs)
+  (@interface func (export "proxy_continue_request")
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_continue_response();
+  ;;; TODO(docs)
+  (@interface func (export "proxy_continue_response")
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult
+  ;;; proxy_send_local_response(uint32_t response_code, const char* response_code_details_ptr,
+  ;;;                           size_t response_code_details_size, const char* body_ptr, size_t body_size,
+  ;;;                           const char* additional_response_header_pairs_ptr,
+  ;;;                           size_t additional_response_header_pairs_size, uint32_t grpc_status);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_send_local_response")
+    ;;; TODO(docs)
+    (param $response_code u32)
+    ;;; TODO(docs)
+    (param $response_code_details_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $response_code_details_size $memorysize)
+    ;;; TODO(docs)
+    (param $body_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $body_size $memorysize)
+    ;;; TODO(docs)
+    (param $additional_response_header_pairs_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $additional_response_header_pairs_size $memorysize)
+    ;;; TODO(docs)
+    (param $grpc_status $grpcstatus)
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_clear_route_cache();
+  ;;; TODO(docs)
+  (@interface func (export "proxy_clear_route_cache")
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; SharedData
+
+  ;;; extern "C" WasmResult proxy_get_shared_data(const char* key_ptr, size_t key_size,
+  ;;;                                             const char** value_ptr, size_t* value_size,
+  ;;;                                             uint32_t* cas);
+  ;;; Returns: Ok, NotFound
+  ;;; TODO(docs)
+  (@interface func (export "proxy_get_shared_data")
+    ;;; TODO(docs)
+    (param $key_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $key_size $memorysize)
+    ;;; TODO(docs)
+    (param $value_ptr (@witx pointer (@witx pointer char8)))
+    ;;; TODO(docs)
+    (param $value_size (@witx pointer $memorysize))
+    ;;; TODO(docs)
+    (param $cas (@witx pointer u32))
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_set_shared_data(const char* key_ptr, size_t key_size,
+  ;;;                                             const char* value_ptr, size_t value_size, uint32_t cas);
+  ;;; //  If cas != 0 and cas != the current cas for 'key' return false, otherwise set the value and
+  ;;; //  return true.
+  ;;; // Returns: Ok, CasMismatch
+  ;;; TODO(docs)
+  (@interface func (export "proxy_set_shared_data")
+    ;;; TODO(docs)
+    (param $key_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $key_size $memorysize)
+    ;;; TODO(docs)
+    (param $value_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $value_size $memorysize)
+    ;;; TODO(docs)
+    (param $cas u32)
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; SharedQueue
+
+  ;;; extern "C" WasmResult proxy_register_shared_queue(const char* queue_name_ptr,
+  ;;;                                                   size_t queue_name_size, uint32_t* token);
+  ;;; // Note: Registering the same queue_name will overwrite the old registration while preseving any
+  ;;; // pending data. Consequently it should typically be followed by a call to
+  ;;; // proxy_dequeue_shared_queue. Returns: Ok
+  ;;; TODO(docs)
+  (@interface func (export "proxy_register_shared_queue")
+    ;;; TODO(docs)
+    (param $queue_name_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $queue_name_size $memorysize)
+    ;;; TODO(docs)
+    (param $token (@witx pointer $token))
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_resolve_shared_queue(const char* vm_id, size_t vm_id_size,
+  ;;;                                                  const char* queue_name_ptr, size_t queue_name_size,
+  ;;;                                                  uint32_t* token);
+  ;;; // Returns: Ok, NotFound
+  ;;; TODO(docs)
+  (@interface func (export "proxy_resolve_shared_queue")
+    ;;; TODO(docs)
+    (param $vm_id (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $vm_id_size $memorysize)
+    ;;; TODO(docs)
+    (param $queue_name_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $queue_name_size $memorysize)
+    ;;; TODO(docs)
+    (param $token (@witx pointer $token))
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_dequeue_shared_queue(uint32_t token, const char** data_ptr,
+  ;;;                                                  size_t* data_size);
+  ;;; // Returns Ok, Empty, NotFound (token not registered).
+  ;;; TODO(docs)
+  (@interface func (export "proxy_dequeue_shared_queue")
+    ;;; TODO(docs)
+    (param $token $token)
+    ;;; TODO(docs)
+    (param $data_ptr (@witx pointer (@witx pointer char8)))
+    ;;; TODO(docs)
+    (param $data_size (@witx pointer $memorysize))
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_enqueue_shared_queue(uint32_t token, const char* data_ptr,
+  ;;;                                                  size_t data_size);
+  ;;; // Returns false if the queue was not found and the data was not enqueued.
+  ;;; TODO(docs)
+  (@interface func (export "proxy_enqueue_shared_queue")
+    ;;; TODO(docs)
+    (param $token $token)
+    ;;; TODO(docs)
+    (param $data_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $data_size $memorysize)
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; Headers/Trailers/Metadata Maps
+
+  ;;; extern "C" WasmResult proxy_add_header_map_value(HeaderMapType type, const char* key_ptr,
+  ;;;                                                  size_t key_size, const char* value_ptr,
+  ;;;                                                  size_t value_size);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_add_header_map_value")
+    ;;; TODO(docs)
+    (param $type $headermaptype)
+    ;;; TODO(docs)
+    (param $key_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $key_size $memorysize)
+    ;;; TODO(docs)
+    (param $value_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $value_size $memorysize)
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_get_header_map_value(HeaderMapType type, const char* key_ptr,
+  ;;;                                                  size_t key_size, const char** value_ptr,
+  ;;;                                                  size_t* value_size);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_get_header_map_value")
+    ;;; TODO(docs)
+    (param $type $headermaptype)
+    ;;; TODO(docs)
+    (param $key_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $key_size $memorysize)
+    ;;; TODO(docs)
+    (param $value_ptr (@witx pointer (@witx pointer char8)))
+    ;;; TODO(docs)
+    (param $value_size (@witx pointer $memorysize))
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_get_header_map_pairs(HeaderMapType type, const char** ptr,
+  ;;;                                                  size_t* size);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_get_header_map_pairs")
+    ;;; TODO(docs)
+    (param $type $headermaptype)
+    ;;; TODO(docs)
+    (param $ptr (@witx pointer (@witx pointer char8)))
+    ;;; TODO(docs)
+    (param $size (@witx pointer $memorysize))
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_set_header_map_pairs(HeaderMapType type, const char* ptr, size_t size);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_set_header_map_pairs")
+    ;;; TODO(docs)
+    (param $type $headermaptype)
+    ;;; TODO(docs)
+    (param $ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $size $memorysize)
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_replace_header_map_value(HeaderMapType type, const char* key_ptr,
+  ;;;                                                      size_t key_size, const char* value_ptr,
+  ;;;                                                      size_t value_size);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_replace_header_map_value")
+    ;;; TODO(docs)
+    (param $type $headermaptype)
+    ;;; TODO(docs)
+    (param $key_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $key_size $memorysize)
+    ;;; TODO(docs)
+    (param $value_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $value_size $memorysize)
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_remove_header_map_value(HeaderMapType type, const char* key_ptr,
+  ;;;                                                     size_t key_size);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_remove_header_map_value")
+    ;;; TODO(docs)
+    (param $type $headermaptype)
+    ;;; TODO(docs)
+    (param $key_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $key_size $memorysize)
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_get_header_map_size(HeaderMapType type, size_t* size);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_get_header_map_size")
+    ;;; TODO(docs)
+    (param $type $headermaptype)
+    ;;; TODO(docs)
+    (param $size (@witx pointer $mapsize))
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; Buffer
+
+  ;;; extern "C" WasmResult proxy_get_buffer_bytes(BufferType type, uint32_t start, uint32_t length,
+  ;;;                                              const char** ptr, size_t* size);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_get_buffer_bytes")
+    ;;; TODO(docs)
+    (param $type $buffertype)
+    ;;; TODO(docs)
+    (param $start u32)
+    ;;; TODO(docs)
+    (param $length u32)
+    ;;; TODO(docs)
+    (param $ptr (@witx pointer (@witx pointer char8)))
+    ;;; TODO(docs)
+    (param $size (@witx pointer $memorysize))
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_get_buffer_status(BufferType type, size_t* length_ptr,
+  ;;;                                               uint32_t* flags_ptr);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_get_buffer_status")
+    ;;; TODO(docs)
+    (param $type $buffertype)
+    ;;; TODO(docs)
+    (param $length_ptr (@witx pointer u32))
+    ;;; TODO(docs)
+    (param $flags_ptr (@witx pointer $bufferflags))
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; HTTP
+
+  ;;; extern "C" WasmResult proxy_http_call(const char* uri_ptr, size_t uri_size, void* header_pairs_ptr,
+  ;;;                                       size_t header_pairs_size, const char* body_ptr,
+  ;;;                                       size_t body_size, void* trailer_pairs_ptr,
+  ;;;                                       size_t trailer_pairs_size, uint32_t timeout_milliseconds,
+  ;;;                                       uint32_t* token_ptr);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_http_call")
+    ;;; TODO(docs)
+    (param $uri_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $uri_size $memorysize)
+    ;;; TODO(docs)
+    (param $header_pairs_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $header_pairs_size $memorysize)
+    ;;; TODO(docs)
+    (param $body_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $body_size $memorysize)
+    ;;; TODO(docs)
+    (param $trailer_pairs_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $trailer_pairs_size $memorysize)
+    ;;; TODO(docs)
+    (param $timeout_milliseconds u32)
+    ;;; TODO(docs)
+    (param $token_ptr (@witx pointer $token))
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; gRPC
+
+  ;;; extern "C" WasmResult proxy_grpc_call(const char* service_ptr, size_t service_size,
+  ;;;                                       const char* service_name_ptr, size_t service_name_size,
+  ;;;                                       const char* method_name_ptr, size_t method_name_size,
+  ;;;                                       const char* request_ptr, size_t request_size,
+  ;;;                                       uint32_t timeout_milliseconds, uint32_t* token_ptr);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_grpc_call")
+    ;;; TODO(docs)
+    (param $service_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $service_size $memorysize)
+    ;;; TODO(docs)
+    (param $service_name_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $service_name_size $memorysize)
+    ;;; TODO(docs)
+    (param $method_name_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $method_name_size $memorysize)
+    ;;; TODO(docs)
+    (param $request_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $request_size $memorysize)
+    ;;; TODO(docs)
+    (param $timeout_milliseconds u32)
+    ;;; TODO(docs)
+    (param $token_ptr (@witx pointer $token))
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_grpc_stream(const char* service_ptr, size_t service_size,
+  ;;;                                         const char* service_name_ptr, size_t service_name_size,
+  ;;;                                         const char* method_name_ptr, size_t method_name_size,
+  ;;;                                         uint32_t* token_ptr);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_grpc_stream")
+    ;;; TODO(docs)
+    (param $service_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $service_size $memorysize)
+    ;;; TODO(docs)
+    (param $service_name_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $service_name_size $memorysize)
+    ;;; TODO(docs)
+    (param $method_name_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $method_name_size $memorysize)
+    ;;; TODO(docs)
+    (param $token_ptr (@witx pointer $token))
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_grpc_cancel(uint32_t token);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_grpc_cancel")
+    ;;; TODO(docs)
+    (param $token $token)
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_grpc_close(uint32_t token);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_grpc_close")
+    ;;; TODO(docs)
+    (param $token $token)
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+
+  ;;; extern "C" WasmResult proxy_grpc_send(uint32_t token, const char* message_ptr, size_t message_size,
+  ;;;                                       uint32_t end_stream);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_grpc_send")
+    ;;; TODO(docs)
+    (param $token $token)
+    ;;; TODO(docs)
+    (param $message_ptr (@witx pointer char8))
+    ;;; TODO(docs)
+    (param $message_size $memorysize)
+    ;;; TODO(docs)
+    (param $end_stream $boolean)
+    ;;; TODO(docs)
+    (result $result $wasmresult)
+  )
+)

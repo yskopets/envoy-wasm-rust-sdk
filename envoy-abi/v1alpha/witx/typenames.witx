@@ -1,0 +1,254 @@
+;; Type names used by Envoy ABI.
+;;
+;; This is a `witx` file. See [here](https://github.com/WebAssembly/WASI/tree/master/docs/witx.md)
+;; for an explanation of what that means.
+
+;;; Error codes returned by ABI functions.
+(typename $wasmresult
+  (enum u32
+    ;;; No error occurred. ABI call completed successfully.
+    $ok
+    ;;; The result could not be found, e.g. a provided key did not appear in a table.
+    $notfound
+    ;;; An argument was bad, e.g. did not conform to the required range.
+    $badargument
+    ;;; A protobuf could not be serialized.
+    $serializationfailure
+    ;;; A protobuf could not be parsed.
+    $parsefailure
+    ;;; A provided expression (e.g. "foo.bar") was illegal or unrecognized.
+    $badexpression
+    ;;; A provided memory range was not legal.
+    $invalidmemoryaccess
+    ;;; Data was requested from an empty container.
+    $empty
+    ;;; The provided CAS did not match that of the stored data.
+    $casmismatch
+    ;;; Returned result was unexpected, e.g. of the incorrect size.
+    $resultmismatch
+    ;;; Internal failure: trying check logs of the surrounding system.
+    $internalfailure
+    ;;; The connection/stream/pipe was broken/closed unexpectedly.
+    $brokenconnection
+  )
+)
+
+;;; Return codes for encode/decode headers filter invocations. The connection manager bases further
+;;; filter invocations on the return code of the previous filter.
+(typename $filterheadersstatus
+  (enum u32
+    ;;; Continue filter chain iteration.
+    $continue
+    ;;; Do not iterate to any of the remaining filters in the chain. Returning
+    ;;; FilterDataStatus::Continue from decodeData()/encodeData() or calling
+    ;;; continueDecoding()/continueEncoding() MUST be called if continued filter iteration is desired.
+    $stopiteration
+
+    ;;; TODO(up-to-date): Envoy API (include/envoy/http) has more variants than Envoy ABI (api/wasm/cpp)
+  )
+)
+
+;;; Return codes for encode/decode data filter invocations. The connection manager bases further
+;;; filter invocations on the return code of the previous filter.
+(typename $filterdatastatus
+  (enum u32
+    ;;; Continue filter chain iteration. If headers have not yet been sent to the next filter, they
+    ;;; will be sent first via decodeHeaders()/encodeHeaders(). If data has previously been buffered,
+    ;;; the data in this callback will be added to the buffer before the entirety is sent to the next
+    ;;; filter.
+    $continue
+    ;;; Do not iterate to any of the remaining filters in the chain, and buffer body data for later
+    ;;; dispatching. Returning FilterDataStatus::Continue from decodeData()/encodeData() or calling
+    ;;; continueDecoding()/continueEncoding() MUST be called if continued filter iteration is desired.
+    ;;;
+    ;;; This should be called by filters which must parse a larger block of the incoming data before
+    ;;; continuing processing and so can not push back on streaming data via watermarks.
+    ;;;
+    ;;; If buffering the request causes buffered data to exceed the configured buffer limit, a 413 will
+    ;;; be sent to the user. On the response path exceeding buffer limits will result in a 500. 
+    $stopiterationandbuffer
+    ;;; Do not iterate to any of the remaining filters in the chain, and buffer body data for later
+    ;;; dispatching. Returning FilterDataStatus::Continue from decodeData()/encodeData() or calling
+    ;;; continueDecoding()/continueEncoding() MUST be called if continued filter iteration is desired.
+    ;;;
+    ;;; This will cause the flow of incoming data to cease until one of the continue.*() functions is
+    ;;; called.
+    ;;;
+    ;;; This should be returned by filters which can nominally stream data but have a transient back-up
+    ;;; such as the configured delay of the fault filter, or if the router filter is still fetching an
+    ;;; upstream connection.
+    $stopiterationandwatermark
+    ;;; Do not iterate to any of the remaining filters in the chain, but do not buffer any of the
+    ;;; body data for later dispatching. Returning FilterDataStatus::Continue from
+    ;;; decodeData()/encodeData() or calling continueDecoding()/continueEncoding() MUST be called if
+    ;;; continued filter iteration is desired.
+    $stopiterationnobuffer
+  )
+)
+
+;;; Return codes for encode/decode trailers filter invocations. The connection manager bases further
+;;; filter invocations on the return code of the previous filter.
+(typename $filtertrailersstatus
+  (enum u32
+    ;;; Continue filter chain iteration.
+    $continue
+    ;;; Do not iterate to any of the remaining filters in the chain. Calling
+    ;;; continueDecoding()/continueEncoding() MUST be called if continued filter iteration is desired.
+    $stopiteration
+  )
+)
+
+;;; Return codes for encode metadata filter invocations. Metadata currently can not stop filter
+;;; iteration.
+(typename $filtermetadatastatus
+  (enum u32
+    ;;; Continue filter chain iteration.
+    $continue
+  )
+)
+
+;;; Type of a header map.
+(typename $headermaptype
+  (enum u32
+    ;;; Request headers of a proxied HTTP request.
+    $requestheaders
+    ;;; Request trailers of a proxied HTTP request.
+    $requesttrailers
+    ;;; Response headers of a proxied HTTP request.
+    $responseheaders
+    ;;; Response trailers of a proxied HTTP request.
+    $responsetrailers
+    ;;; Client's initial metadata of an outgoing gRPC call.
+    $grpccreateinitialmetadata
+    ;;; Server's initial metadata of an outgoing gRPC call.
+    $grpcreceiveinitialmetadata
+    ;;; Server's trailing metadata of an outgoing gRPC call.
+    $grpcreceivetrailingmetadata
+    ;;; Response headers of an outgoing HTTP request.
+    $httpcallresponseheaders
+    ;;; Response trailers of an outgoing HTTP request.
+    $httpcallresponsetrailers
+  )
+)
+
+;;; Type of payload in a buffer.
+(typename $buffertype
+  (enum u32
+    ;;; Request body of a proxied HTTP request.
+    $httprequestbody
+    ;;; Response body of a proxied HTTP request.
+    $httpresponsebody
+    ;;; Request payload of a proxied L4 connection.
+    $networkdownstreamdata
+    ;;; Response payload of a proxied L4 connection.
+    $networkupstreamdata
+    ;;; Response body of an outgoing HTTP request.
+    $httpcallresponsebody
+    ;;; Response payload of an outgoing gRPC call.
+    $grpcreceivebuffer
+  )
+)
+
+;;; Buffer flags.
+(typename $bufferflags
+  (flags u32
+    ;;; End of stream has been reached.
+    $endofstream
+  )
+)
+
+;;; Size of data in a linear memory.
+(typename $memorysize u32)
+
+;;; Size of a header map, e.g. request headers, response trailers, etc.
+(typename $mapsize u32)
+
+;;; Unique identifier of a root/connection/request context.
+(typename $contextid u32)
+
+;;; Opaque identifier of an outgoing HTTP request, gRPC call, etc.
+(typename $token u32)
+
+;;; Metric handle.
+(typename $metric u32)
+
+;;; Metric type.
+(typename $metrictype
+  (enum u32
+    ;;; Counter.
+    $counter
+    ;;; Gauge.
+    $gauge
+    ;;; Histogram.
+    $histogram
+  )
+)
+
+;;; Boolean true or false.
+(typename $boolean u32)
+
+;;; Timestamp in nanoseconds.
+(typename $timestamp u64)
+
+;;; Well-known gRPC statuses.
+(typename $grpcstatus
+  ;;; notice that Envoy C ABI uses `int32_t` type, but `witx` doesn't allow to use `s32` for `enum`
+  (enum u32
+    ;;; The RPC completed successfully.
+    $ok
+    ;;; The RPC was canceled.
+    $canceled
+    ;;; Some unknown error occurred.
+    $unknown
+    ;;; An argument to the RPC was invalid.
+    $invalidargument
+    ;;; The deadline for the RPC expired before the RPC completed.
+    $deadlineexceeded
+    ;;; Some resource for the RPC was not found.
+    $notfound
+    ;;; A resource the RPC attempted to create already exists.
+    $alreadyexists
+    ;;; Permission was denied for the RPC.
+    $permissiondenied
+    ;;; Some resource is exhausted, resulting in RPC failure.
+    $resourceexhausted
+    ;;; Some precondition for the RPC failed.
+    $failedprecondition
+    ;;; The RPC was aborted.
+    $aborted
+    ;;; Some operation was requested outside of a legal range.
+    $outofrange
+    ;;; The RPC requested was not implemented.
+    $unimplemented
+    ;;; Some internal error occurred.
+    $internal
+    ;;; The RPC endpoint is current unavailable.
+    $unavailable
+    ;;; There was some data loss resulting in RPC failure.
+    $dataloss
+    ;;; The RPC does not have required credentials for the RPC to succeed.
+    $unauthenticated
+
+    ;;; This is a non-GRPC error code, indicating the status code in gRPC headers
+    ;;; was invalid.
+    $invalidcode
+  )
+)
+
+;;; Log level.
+(typename $loglevel
+  (enum u32
+    ;;; Trace.
+    $trace
+    ;;; Debug.
+    $debug
+    ;;; Info.
+    $info
+    ;;; Warn.
+    $warn
+    ;;; Error.
+    $error
+    ;;; Critical.
+    $critical
+  )
+)

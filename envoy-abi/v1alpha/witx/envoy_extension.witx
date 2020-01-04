@@ -1,0 +1,270 @@
+;; ABI of Envoy Wasm extension.
+;;
+;; This is a `witx` file. See [here](https://github.com/WebAssembly/WASI/tree/master/docs/witx.md)
+;; for an explanation of what that means.
+
+(use "typenames.witx")
+
+(module $envoy_extension
+
+  ;;; Linear memory to be accessed by ABI functions that need it.
+  (import "memory" (memory))
+
+  ;;; Calls in.
+
+  ;;; extern "C" uint32_t proxy_on_start(uint32_t root_context_id, uint32_t configuration_size);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_start")
+    ;;; TODO(docs)
+    (param $root_context_id $contextid)
+    ;;; TODO(docs)
+    (param $configuration_size $memorysize)
+    ;;; TODO(docs)
+    (result $result u32)
+  )
+
+  ;;; extern "C" uint32_t proxy_validate_configuration(uint32_t root_context_id,
+  ;;;                                                  uint32_t configuration_size);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_validate_configuration")
+    ;;; TODO(docs)
+    (param $root_context_id $contextid)
+    ;;; TODO(docs)
+    (param $configuration_size $memorysize)
+    ;;; TODO(docs)
+    (result $result u32)
+  )
+
+  ;;; extern "C" uint32_t proxy_on_configure(uint32_t root_context_id, uint32_t configuration_size);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_configure")
+    ;;; TODO(docs)
+    (param $root_context_id $contextid)
+    ;;; TODO(docs)
+    (param $configuration_size $memorysize)
+    ;;; TODO(docs)
+    (result $result u32)
+  )
+
+  ;;; extern "C" void proxy_on_tick(uint32_t root_context_id);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_tick")
+    ;;; TODO(docs)
+    (param $root_context_id $contextid)
+  )
+
+  ;;; extern "C" void proxy_on_queue_ready(uint32_t root_context_id, uint32_t token);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_queue_ready")
+    ;;; TODO(docs)
+    (param $root_context_id $contextid)
+    ;;; TODO(docs)
+    (param $token $token)
+  )
+
+  ;;; Stream calls.
+
+  ;;; extern "C" void proxy_on_create(uint32_t context_id, uint32_t root_context_id);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_create")
+    ;;; TODO(docs)
+    (param $context_id $contextid)
+    ;;; TODO(docs)
+    (param $root_context_id $contextid)
+  )
+
+  ;;; extern "C" FilterHeadersStatus proxy_on_request_headers(uint32_t context_id, uint32_t headers);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_request_headers")
+    ;;; TODO(docs)
+    (param $context_id $contextid)
+    ;;; TODO(docs)
+    (param $headers $mapsize)
+    ;;; TODO(docs)
+    (result $status $filterheadersstatus)
+  )
+
+  ;;; extern "C" FilterDataStatus proxy_on_request_body(uint32_t context_id, uint32_t body_buffer_length,
+  ;;;                                                   uint32_t end_of_stream);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_request_body")
+    ;;; TODO(docs)
+    (param $context_id $contextid)
+    ;;; TODO(docs)
+    (param $body_buffer_length $memorysize)
+    ;;; TODO(docs)
+    (param $end_of_stream $boolean)
+    ;;; TODO(docs)
+    (result $status $filterdatastatus)
+  )
+
+  ;;; extern "C" FilterTrailersStatus proxy_on_request_trailers(uint32_t context_id, uint32_t trailers);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_request_trailers")
+    ;;; TODO(docs)
+    (param $context_id $contextid)
+    ;;; TODO(docs)
+    (param $trailers $mapsize)
+    ;;; TODO(docs)
+    (result $status $filtertrailersstatus)
+  )
+
+  ;;; extern "C" FilterMetadataStatus proxy_on_request_metadata(uint32_t context_id, uint32_t nelements);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_request_metadata")
+    ;;; TODO(docs)
+    (param $context_id $contextid)
+    ;;; TODO(docs)
+    (param $nelements $mapsize)
+    ;;; TODO(docs)
+    (result $status $filtermetadatastatus)
+  )
+
+  ;;; extern "C" FilterHeadersStatus proxy_on_response_headers(uint32_t context_id, uint32_t headers);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_response_headers")
+    ;;; TODO(docs)
+    (param $context_id $contextid)
+    ;;; TODO(docs)
+    (param $headers $mapsize)
+    ;;; TODO(docs)
+    (result $status $filterheadersstatus)
+  )
+
+  ;;; extern "C" FilterDataStatus proxy_on_response_body(uint32_t context_id, uint32_t body_buffer_length,
+  ;;;                                                    uint32_t end_of_stream);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_response_body")
+    ;;; TODO(docs)
+    (param $context_id $contextid)
+    ;;; TODO(docs)
+    (param $body_buffer_length $memorysize)
+    ;;; TODO(docs)
+    (param $end_of_stream $boolean)
+    ;;; TODO(docs)
+    (result $status $filterdatastatus)
+  )
+
+  ;;; extern "C" FilterTrailersStatus proxy_on_response_trailers(uint32_t context_id, uint32_t trailers);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_response_trailers")
+    ;;; TODO(docs)
+    (param $context_id $contextid)
+    ;;; TODO(docs)
+    (param $trailers $mapsize)
+    ;;; TODO(docs)
+    (result $status $filtertrailersstatus)
+  )
+
+  ;;; extern "C" FilterMetadataStatus proxy_on_response_metadata(uint32_t context_id, uint32_t nelements);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_response_metadata")
+    ;;; TODO(docs)
+    (param $context_id $contextid)
+    ;;; TODO(docs)
+    (param $nelements $mapsize)
+    ;;; TODO(docs)
+    (result $status $filtermetadatastatus)
+  )
+
+  ;;; extern "C" uint32_t proxy_on_done(uint32_t context_id);
+  ;;; The stream/vm has completed.
+  (@interface func (export "proxy_on_done")
+    ;;; TODO(docs)
+    (param $context_id $contextid)
+    ;;; TODO(docs)
+    (result $result u32)
+  )
+
+  ;;; extern "C" void proxy_on_log(uint32_t context_id);
+  ;;; proxy_on_log occurs after proxy_on_done.
+  (@interface func (export "proxy_on_log")
+    ;;; TODO(docs)
+    (param $context_id $contextid)
+  )
+
+  ;;; extern "C" void proxy_on_delete(uint32_t context_id);
+  ;;; The Context in the proxy has been destroyed and no further calls will be coming.
+  (@interface func (export "proxy_on_delete")
+    ;;; TODO(docs)
+    (param $context_id $contextid)
+  )
+
+  ;;; HTTP.
+
+  ;;; extern "C" void proxy_on_http_call_response(uint32_t context_id, uint32_t token, uint32_t headers,
+  ;;;                                             uint32_t body_size, uint32_t trailers);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_http_call_response")
+    ;;; TODO(docs)
+    (param $context_id $contextid)
+    ;;; TODO(docs)
+    (param $token $token)
+    ;;; TODO(docs)
+    (param $headers $mapsize)
+    ;;; TODO(docs)
+    (param $body_size $memorysize)
+    ;;; TODO(docs)
+    (param $trailers $mapsize)
+  )
+
+  ;;; gRPC.
+
+  ;;; extern "C" void proxy_on_grpc_create_initial_metadata(uint32_t context_id, uint32_t token,
+  ;;;                                                       uint32_t headers);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_grpc_create_initial_metadata")
+    ;;; TODO(docs)
+    (param $context_id $contextid)
+    ;;; TODO(docs)
+    (param $token $token)
+    ;;; TODO(docs)
+    (param $headers $mapsize)
+  )
+
+  ;;; extern "C" void proxy_on_grpc_receive_initial_metadata(uint32_t context_id, uint32_t token,
+  ;;;                                                        uint32_t headers);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_grpc_receive_initial_metadata")
+    ;;; TODO(docs)
+    (param $context_id $contextid)
+    ;;; TODO(docs)
+    (param $token $token)
+    ;;; TODO(docs)
+    (param $headers $mapsize)
+  )
+
+  ;;; extern "C" void proxy_on_grpc_trailing_metadata(uint32_t context_id, uint32_t token,
+  ;;;                                                 uint32_t trailers);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_grpc_trailing_metadata")
+    ;;; TODO(docs)
+    (param $context_id $contextid)
+    ;;; TODO(docs)
+    (param $token $token)
+    ;;; TODO(docs)
+    (param $trailers $mapsize)
+  )
+
+  ;;; extern "C" void proxy_on_grpc_receive(uint32_t context_id, uint32_t token, uint32_t response_size);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_grpc_receive")
+    ;;; TODO(docs)
+    (param $context_id $contextid)
+    ;;; TODO(docs)
+    (param $token $token)
+    ;;; TODO(docs)
+    (param $response_size $memorysize)
+  )
+
+  ;;; extern "C" void proxy_on_grpc_close(uint32_t context_id, uint32_t token, uint32_t status_code);
+  ;;; TODO(docs)
+  (@interface func (export "proxy_on_grpc_close")
+    ;;; TODO(docs)
+    (param $context_id $contextid)
+    ;;; TODO(docs)
+    (param $token $token)
+    ;;; TODO(docs)
+    (param $status_code $grpcstatus)
+  )
+)
