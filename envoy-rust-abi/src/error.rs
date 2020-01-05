@@ -1,4 +1,5 @@
 use super::WasmResult;
+use super::WASM_RESULT_OK;
 use core::fmt;
 use core::num::NonZeroU32;
 
@@ -13,9 +14,12 @@ impl Error {
     /// Constructs a new error from a raw error code, returning `None` if the
     /// error code is zero (which means success).
     pub fn from_raw_error(error: WasmResult) -> Option<Error> {
-        Some(Error {
-            code: NonZeroU32::new(error)?,
-        })
+        match error {
+            WASM_RESULT_OK => None,
+            _ => Some(Error {
+                code: NonZeroU32::new(error)?,
+            })
+        }
     }
 
     /// Returns the raw error code that this error represents.

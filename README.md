@@ -11,3 +11,5 @@
     * [witx](./envoy-abi/v1alpha/witx) - `Envoy ABI` definition in `witx` format
     * [docs](./envoy-abi/v1alpha/docs/envoy_abi_v1alpha.md) - `Envoy ABI` documentation generated out of `witx` definition
 * [envoy-rust-abi](./envoy-rust-abi/) - Rust bindings to `Envoy ABI`
+* [envoy-rust-examples](./envoy-rust-examples/) - Examples of how to use Rust bindings
+  * [hello-world](./envoy-rust-examples/hello-world/) - Call `proxy_log` from various handlers, e.g. `proxy_on_start`, `proxy_on_configure`, `proxy_on_create`, `proxy_on_request_headers`, etc

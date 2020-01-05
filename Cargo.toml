@@ -2,4 +2,5 @@
 
 members = [
     "envoy-rust-abi",
+    "envoy-rust-examples/hello-world",
 ]
