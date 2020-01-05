@@ -60,13 +60,12 @@ pub unsafe fn proxy_get_status(
 ///
 /// * `level` - TODO(docs)
 /// * `message` - TODO(docs)
-/// * `message_len` - TODO(docs)
 ///
 /// ## Return
 ///
 /// * `error` - TODO(docs)
-pub unsafe fn proxy_log(level: LogLevel, message: *const u8, message_len: Size) -> Result<()> {
-    let rc = envoy::proxy_log(level, message, message_len);
+pub unsafe fn proxy_log(level: LogLevel, message: &str) -> Result<()> {
+    let rc = envoy::proxy_log(level, message.as_ptr(), message.len());
     if let Some(err) = Error::from_raw_error(rc) {
         Err(err)
     } else {
@@ -122,7 +121,6 @@ pub unsafe fn proxy_get_current_time_nanoseconds(time: *mut Timestamp) -> Result
 /// ## Parameters
 ///
 /// * `path` - TODO(docs)
-/// * `path_len` - TODO(docs)
 /// * `value` - TODO(docs)
 /// * `value_len` - TODO(docs)
 ///
@@ -130,12 +128,11 @@ pub unsafe fn proxy_get_current_time_nanoseconds(time: *mut Timestamp) -> Result
 ///
 /// * `error` - TODO(docs)
 pub unsafe fn proxy_get_property(
-    path: *const u8,
-    path_len: Size,
+    path: &str,
     value: *mut *mut u8,
     value_len: *mut Size,
 ) -> Result<()> {
-    let rc = envoy::proxy_get_property(path, path_len, value, value_len);
+    let rc = envoy::proxy_get_property(path.as_ptr(), path.len(), value, value_len);
     if let Some(err) = Error::from_raw_error(rc) {
         Err(err)
     } else {
@@ -150,20 +147,13 @@ pub unsafe fn proxy_get_property(
 /// ## Parameters
 ///
 /// * `path` - TODO(docs)
-/// * `path_len` - TODO(docs)
 /// * `value` - TODO(docs)
-/// * `value_len` - TODO(docs)
 ///
 /// ## Return
 ///
 /// * `error` - TODO(docs)
-pub unsafe fn proxy_set_property(
-    path: *const u8,
-    path_len: Size,
-    value: *const u8,
-    value_len: Size,
-) -> Result<()> {
-    let rc = envoy::proxy_set_property(path, path_len, value, value_len);
+pub unsafe fn proxy_set_property(path: &str, value: &str) -> Result<()> {
+    let rc = envoy::proxy_set_property(path.as_ptr(), path.len(), value.as_ptr(), value.len());
     if let Some(err) = Error::from_raw_error(rc) {
         Err(err)
     } else {
@@ -215,7 +205,6 @@ pub unsafe fn proxy_done() -> Result<()> {
 ///
 /// * `metric_type` - TODO(docs)
 /// * `name` - TODO(docs)
-/// * `name_len` - TODO(docs)
 /// * `id` - TODO(docs)
 ///
 /// ## Return
@@ -223,11 +212,10 @@ pub unsafe fn proxy_done() -> Result<()> {
 /// * `error` - TODO(docs)
 pub unsafe fn proxy_define_metric(
     metric_type: MetricType,
-    name: *const u8,
-    name_len: Size,
+    name: &str,
     id: *mut MetricId,
 ) -> Result<()> {
-    let rc = envoy::proxy_define_metric(metric_type, name, name_len, id);
+    let rc = envoy::proxy_define_metric(metric_type, name.as_ptr(), name.len(), id);
     if let Some(err) = Error::from_raw_error(rc) {
         Err(err)
     } else {
@@ -337,11 +325,8 @@ pub unsafe fn proxy_continue_response() -> Result<()> {
 ///
 /// * `response_code` - TODO(docs)
 /// * `response_code_details` - TODO(docs)
-/// * `response_code_details_len` - TODO(docs)
 /// * `body` - TODO(docs)
-/// * `body_len` - TODO(docs)
 /// * `additional_response_header_pairs` - TODO(docs)
-/// * `additional_response_header_pairs_len` - TODO(docs)
 /// * `grpc_status` - TODO(docs)
 ///
 /// ## Return
@@ -349,22 +334,19 @@ pub unsafe fn proxy_continue_response() -> Result<()> {
 /// * `error` - TODO(docs)
 pub unsafe fn proxy_send_local_response(
     response_code: u32,
-    response_code_details: *const u8,
-    response_code_details_len: Size,
-    body: *const u8,
-    body_len: Size,
-    additional_response_header_pairs: *const u8,
-    additional_response_header_pairs_len: Size,
+    response_code_details: &str,
+    body: &str,
+    additional_response_header_pairs: &str,
     grpc_status: GrpcStatus,
 ) -> Result<()> {
     let rc = envoy::proxy_send_local_response(
         response_code,
-        response_code_details,
-        response_code_details_len,
-        body,
-        body_len,
-        additional_response_header_pairs,
-        additional_response_header_pairs_len,
+        response_code_details.as_ptr(),
+        response_code_details.len(),
+        body.as_ptr(),
+        body.len(),
+        additional_response_header_pairs.as_ptr(),
+        additional_response_header_pairs.len(),
         grpc_status,
     );
     if let Some(err) = Error::from_raw_error(rc) {
@@ -399,7 +381,6 @@ pub unsafe fn proxy_clear_route_cache() -> Result<()> {
 /// ## Parameters
 ///
 /// * `key` - TODO(docs)
-/// * `key_len` - TODO(docs)
 /// * `value` - TODO(docs)
 /// * `value_len` - TODO(docs)
 /// * `cas` - TODO(docs)
@@ -408,13 +389,12 @@ pub unsafe fn proxy_clear_route_cache() -> Result<()> {
 ///
 /// * `error` - TODO(docs)
 pub unsafe fn proxy_get_shared_data(
-    key: *const u8,
-    key_len: Size,
+    key: &str,
     value: *mut *mut u8,
     value_len: *mut Size,
     cas: *mut u32,
 ) -> Result<()> {
-    let rc = envoy::proxy_get_shared_data(key, key_len, value, value_len, cas);
+    let rc = envoy::proxy_get_shared_data(key.as_ptr(), key.len(), value, value_len, cas);
     if let Some(err) = Error::from_raw_error(rc) {
         Err(err)
     } else {
@@ -432,22 +412,15 @@ pub unsafe fn proxy_get_shared_data(
 /// ## Parameters
 ///
 /// * `key` - TODO(docs)
-/// * `key_len` - TODO(docs)
 /// * `value` - TODO(docs)
-/// * `value_len` - TODO(docs)
 /// * `cas` - TODO(docs)
 ///
 /// ## Return
 ///
 /// * `error` - TODO(docs)
-pub unsafe fn proxy_set_shared_data(
-    key: *const u8,
-    key_len: Size,
-    value: *const u8,
-    value_len: Size,
-    cas: u32,
-) -> Result<()> {
-    let rc = envoy::proxy_set_shared_data(key, key_len, value, value_len, cas);
+pub unsafe fn proxy_set_shared_data(key: &str, value: &str, cas: u32) -> Result<()> {
+    let rc =
+        envoy::proxy_set_shared_data(key.as_ptr(), key.len(), value.as_ptr(), value.len(), cas);
     if let Some(err) = Error::from_raw_error(rc) {
         Err(err)
     } else {
@@ -466,18 +439,13 @@ pub unsafe fn proxy_set_shared_data(
 /// ## Parameters
 ///
 /// * `queue_name` - TODO(docs)
-/// * `queue_name_len` - TODO(docs)
 /// * `token` - TODO(docs)
 ///
 /// ## Return
 ///
 /// * `error` - TODO(docs)
-pub unsafe fn proxy_register_shared_queue(
-    queue_name: *const u8,
-    queue_name_len: Size,
-    token: *mut Token,
-) -> Result<()> {
-    let rc = envoy::proxy_register_shared_queue(queue_name, queue_name_len, token);
+pub unsafe fn proxy_register_shared_queue(queue_name: &str, token: *mut Token) -> Result<()> {
+    let rc = envoy::proxy_register_shared_queue(queue_name.as_ptr(), queue_name.len(), token);
     if let Some(err) = Error::from_raw_error(rc) {
         Err(err)
     } else {
@@ -494,22 +462,24 @@ pub unsafe fn proxy_register_shared_queue(
 /// ## Parameters
 ///
 /// * `vm_id` - TODO(docs)
-/// * `vm_id_len` - TODO(docs)
 /// * `queue_name` - TODO(docs)
-/// * `queue_name_len` - TODO(docs)
 /// * `token` - TODO(docs)
 ///
 /// ## Return
 ///
 /// * `error` - TODO(docs)
 pub unsafe fn proxy_resolve_shared_queue(
-    vm_id: *const u8,
-    vm_id_len: Size,
-    queue_name: *const u8,
-    queue_name_len: Size,
+    vm_id: &str,
+    queue_name: &str,
     token: *mut Token,
 ) -> Result<()> {
-    let rc = envoy::proxy_resolve_shared_queue(vm_id, vm_id_len, queue_name, queue_name_len, token);
+    let rc = envoy::proxy_resolve_shared_queue(
+        vm_id.as_ptr(),
+        vm_id.len(),
+        queue_name.as_ptr(),
+        queue_name.len(),
+        token,
+    );
     if let Some(err) = Error::from_raw_error(rc) {
         Err(err)
     } else {
@@ -553,17 +523,12 @@ pub unsafe fn proxy_dequeue_shared_queue(
 ///
 /// * `token` - TODO(docs)
 /// * `data` - TODO(docs)
-/// * `data_len` - TODO(docs)
 ///
 /// ## Return
 ///
 /// * `error` - TODO(docs)
-pub unsafe fn proxy_enqueue_shared_queue(
-    token: Token,
-    data: *const u8,
-    data_len: Size,
-) -> Result<()> {
-    let rc = envoy::proxy_enqueue_shared_queue(token, data, data_len);
+pub unsafe fn proxy_enqueue_shared_queue(token: Token, data: &str) -> Result<()> {
+    let rc = envoy::proxy_enqueue_shared_queue(token, data.as_ptr(), data.len());
     if let Some(err) = Error::from_raw_error(rc) {
         Err(err)
     } else {
@@ -581,21 +546,23 @@ pub unsafe fn proxy_enqueue_shared_queue(
 ///
 /// * `headers_type` - TODO(docs)
 /// * `key` - TODO(docs)
-/// * `key_len` - TODO(docs)
 /// * `value` - TODO(docs)
-/// * `value_len` - TODO(docs)
 ///
 /// ## Return
 ///
 /// * `error` - TODO(docs)
 pub unsafe fn proxy_add_header_map_value(
     headers_type: HeadersType,
-    key: *const u8,
-    key_len: Size,
-    value: *const u8,
-    value_len: Size,
+    key: &str,
+    value: &str,
 ) -> Result<()> {
-    let rc = envoy::proxy_add_header_map_value(headers_type, key, key_len, value, value_len);
+    let rc = envoy::proxy_add_header_map_value(
+        headers_type,
+        key.as_ptr(),
+        key.len(),
+        value.as_ptr(),
+        value.len(),
+    );
     if let Some(err) = Error::from_raw_error(rc) {
         Err(err)
     } else {
@@ -612,7 +579,6 @@ pub unsafe fn proxy_add_header_map_value(
 ///
 /// * `headers_type` - TODO(docs)
 /// * `key` - TODO(docs)
-/// * `key_len` - TODO(docs)
 /// * `value` - TODO(docs)
 /// * `value_len` - TODO(docs)
 ///
@@ -621,12 +587,12 @@ pub unsafe fn proxy_add_header_map_value(
 /// * `error` - TODO(docs)
 pub unsafe fn proxy_get_header_map_value(
     headers_type: HeadersType,
-    key: *const u8,
-    key_len: Size,
+    key: &str,
     value: *mut *mut u8,
     value_len: *mut Size,
 ) -> Result<()> {
-    let rc = envoy::proxy_get_header_map_value(headers_type, key, key_len, value, value_len);
+    let rc =
+        envoy::proxy_get_header_map_value(headers_type, key.as_ptr(), key.len(), value, value_len);
     if let Some(err) = Error::from_raw_error(rc) {
         Err(err)
     } else {
@@ -667,17 +633,12 @@ pub unsafe fn proxy_get_header_map_pairs(
 ///
 /// * `headers_type` - TODO(docs)
 /// * `buf` - TODO(docs)
-/// * `buf_len` - TODO(docs)
 ///
 /// ## Return
 ///
 /// * `error` - TODO(docs)
-pub unsafe fn proxy_set_header_map_pairs(
-    headers_type: HeadersType,
-    buf: *const u8,
-    buf_len: Size,
-) -> Result<()> {
-    let rc = envoy::proxy_set_header_map_pairs(headers_type, buf, buf_len);
+pub unsafe fn proxy_set_header_map_pairs(headers_type: HeadersType, buf: &str) -> Result<()> {
+    let rc = envoy::proxy_set_header_map_pairs(headers_type, buf.as_ptr(), buf.len());
     if let Some(err) = Error::from_raw_error(rc) {
         Err(err)
     } else {
@@ -694,21 +655,23 @@ pub unsafe fn proxy_set_header_map_pairs(
 ///
 /// * `headers_type` - TODO(docs)
 /// * `key` - TODO(docs)
-/// * `key_len` - TODO(docs)
 /// * `value` - TODO(docs)
-/// * `value_len` - TODO(docs)
 ///
 /// ## Return
 ///
 /// * `error` - TODO(docs)
 pub unsafe fn proxy_replace_header_map_value(
     headers_type: HeadersType,
-    key: *const u8,
-    key_len: Size,
-    value: *const u8,
-    value_len: Size,
+    key: &str,
+    value: &str,
 ) -> Result<()> {
-    let rc = envoy::proxy_replace_header_map_value(headers_type, key, key_len, value, value_len);
+    let rc = envoy::proxy_replace_header_map_value(
+        headers_type,
+        key.as_ptr(),
+        key.len(),
+        value.as_ptr(),
+        value.len(),
+    );
     if let Some(err) = Error::from_raw_error(rc) {
         Err(err)
     } else {
@@ -724,17 +687,12 @@ pub unsafe fn proxy_replace_header_map_value(
 ///
 /// * `headers_type` - TODO(docs)
 /// * `key` - TODO(docs)
-/// * `key_len` - TODO(docs)
 ///
 /// ## Return
 ///
 /// * `error` - TODO(docs)
-pub unsafe fn proxy_remove_header_map_value(
-    headers_type: HeadersType,
-    key: *const u8,
-    key_len: Size,
-) -> Result<()> {
-    let rc = envoy::proxy_remove_header_map_value(headers_type, key, key_len);
+pub unsafe fn proxy_remove_header_map_value(headers_type: HeadersType, key: &str) -> Result<()> {
+    let rc = envoy::proxy_remove_header_map_value(headers_type, key.as_ptr(), key.len());
     if let Some(err) = Error::from_raw_error(rc) {
         Err(err)
     } else {
@@ -833,13 +791,9 @@ pub unsafe fn proxy_get_buffer_status(
 /// ## Parameters
 ///
 /// * `uri` - TODO(docs)
-/// * `uri_len` - TODO(docs)
 /// * `header_pairs` - TODO(docs)
-/// * `header_pairs_len` - TODO(docs)
 /// * `body` - TODO(docs)
-/// * `body_len` - TODO(docs)
 /// * `trailer_pairs` - TODO(docs)
-/// * `trailer_pairs_len` - TODO(docs)
 /// * `timeout_ms` - TODO(docs)
 /// * `token` - TODO(docs)
 ///
@@ -847,26 +801,22 @@ pub unsafe fn proxy_get_buffer_status(
 ///
 /// * `error` - TODO(docs)
 pub unsafe fn proxy_http_call(
-    uri: *const u8,
-    uri_len: Size,
-    header_pairs: *const u8,
-    header_pairs_len: Size,
-    body: *const u8,
-    body_len: Size,
-    trailer_pairs: *const u8,
-    trailer_pairs_len: Size,
+    uri: &str,
+    header_pairs: &str,
+    body: &str,
+    trailer_pairs: &str,
     timeout_ms: u32,
     token: *mut Token,
 ) -> Result<()> {
     let rc = envoy::proxy_http_call(
-        uri,
-        uri_len,
-        header_pairs,
-        header_pairs_len,
-        body,
-        body_len,
-        trailer_pairs,
-        trailer_pairs_len,
+        uri.as_ptr(),
+        uri.len(),
+        header_pairs.as_ptr(),
+        header_pairs.len(),
+        body.as_ptr(),
+        body.len(),
+        trailer_pairs.as_ptr(),
+        trailer_pairs.len(),
         timeout_ms,
         token,
     );
@@ -888,13 +838,9 @@ pub unsafe fn proxy_http_call(
 /// ## Parameters
 ///
 /// * `service` - TODO(docs)
-/// * `service_len` - TODO(docs)
 /// * `service_name` - TODO(docs)
-/// * `service_name_len` - TODO(docs)
 /// * `method_name` - TODO(docs)
-/// * `method_name_len` - TODO(docs)
 /// * `request` - TODO(docs)
-/// * `request_len` - TODO(docs)
 /// * `timeout_ms` - TODO(docs)
 /// * `token` - TODO(docs)
 ///
@@ -902,26 +848,22 @@ pub unsafe fn proxy_http_call(
 ///
 /// * `error` - TODO(docs)
 pub unsafe fn proxy_grpc_call(
-    service: *const u8,
-    service_len: Size,
-    service_name: *const u8,
-    service_name_len: Size,
-    method_name: *const u8,
-    method_name_len: Size,
-    request: *const u8,
-    request_len: Size,
+    service: &str,
+    service_name: &str,
+    method_name: &str,
+    request: &str,
     timeout_ms: u32,
     token: *mut Token,
 ) -> Result<()> {
     let rc = envoy::proxy_grpc_call(
-        service,
-        service_len,
-        service_name,
-        service_name_len,
-        method_name,
-        method_name_len,
-        request,
-        request_len,
+        service.as_ptr(),
+        service.len(),
+        service_name.as_ptr(),
+        service_name.len(),
+        method_name.as_ptr(),
+        method_name.len(),
+        request.as_ptr(),
+        request.len(),
         timeout_ms,
         token,
     );
@@ -941,32 +883,26 @@ pub unsafe fn proxy_grpc_call(
 /// ## Parameters
 ///
 /// * `service` - TODO(docs)
-/// * `service_len` - TODO(docs)
 /// * `service_name` - TODO(docs)
-/// * `service_name_len` - TODO(docs)
 /// * `method_name` - TODO(docs)
-/// * `method_name_len` - TODO(docs)
 /// * `token` - TODO(docs)
 ///
 /// ## Return
 ///
 /// * `error` - TODO(docs)
 pub unsafe fn proxy_grpc_stream(
-    service: *const u8,
-    service_len: Size,
-    service_name: *const u8,
-    service_name_len: Size,
-    method_name: *const u8,
-    method_name_len: Size,
+    service: &str,
+    service_name: &str,
+    method_name: &str,
     token: *mut Token,
 ) -> Result<()> {
     let rc = envoy::proxy_grpc_stream(
-        service,
-        service_len,
-        service_name,
-        service_name_len,
-        method_name,
-        method_name_len,
+        service.as_ptr(),
+        service.len(),
+        service_name.as_ptr(),
+        service_name.len(),
+        method_name.as_ptr(),
+        method_name.len(),
         token,
     );
     if let Some(err) = Error::from_raw_error(rc) {
@@ -1022,19 +958,13 @@ pub unsafe fn proxy_grpc_close(token: Token) -> Result<()> {
 ///
 /// * `token` - TODO(docs)
 /// * `message` - TODO(docs)
-/// * `message_len` - TODO(docs)
 /// * `end_stream` - TODO(docs)
 ///
 /// ## Return
 ///
 /// * `error` - TODO(docs)
-pub unsafe fn proxy_grpc_send(
-    token: Token,
-    message: *const u8,
-    message_len: Size,
-    end_stream: Boolean,
-) -> Result<()> {
-    let rc = envoy::proxy_grpc_send(token, message, message_len, end_stream);
+pub unsafe fn proxy_grpc_send(token: Token, message: &str, end_stream: Boolean) -> Result<()> {
+    let rc = envoy::proxy_grpc_send(token, message.as_ptr(), message.len(), end_stream);
     if let Some(err) = Error::from_raw_error(rc) {
         Err(err)
     } else {
@@ -1044,7 +974,7 @@ pub unsafe fn proxy_grpc_send(
 
 pub mod envoy {
     use super::*;
-    #[link(wasm_import_module = "envoy")]
+    #[link(wasm_import_module = "env")]
     extern "C" {
         /// Configuration and Status.
         /// extern "C" WasmResult proxy_get_configuration(const char** configuration_ptr,
@@ -1062,7 +992,8 @@ pub mod envoy {
         /// Logging
         /// extern "C" WasmResult proxy_log(LogLevel level, const char* logMessage, size_t messageSize);
         /// TODO(docs)
-        pub fn proxy_log(level: LogLevel, message: *const u8, message_len: Size) -> WasmResult;
+        pub fn proxy_log(level: LogLevel, message_ptr: *const u8, message_len: usize)
+            -> WasmResult;
         /// Timer
         /// extern "C" WasmResult proxy_set_tick_period_milliseconds(uint32_t millisecond);
         /// Timer (must be called from a root context, e.g. onStart, onTick).
@@ -1076,8 +1007,8 @@ pub mod envoy {
         ///                                          const char** value_ptr_ptr, size_t* value_size_ptr);
         /// TODO(docs)
         pub fn proxy_get_property(
-            path: *const u8,
-            path_len: Size,
+            path_ptr: *const u8,
+            path_len: usize,
             value: *mut *mut u8,
             value_len: *mut Size,
         ) -> WasmResult;
@@ -1085,10 +1016,10 @@ pub mod envoy {
         ///                                          const char* value_ptr, size_t value_size);
         /// TODO(docs)
         pub fn proxy_set_property(
-            path: *const u8,
-            path_len: Size,
-            value: *const u8,
-            value_len: Size,
+            path_ptr: *const u8,
+            path_len: usize,
+            value_ptr: *const u8,
+            value_len: usize,
         ) -> WasmResult;
         /// System
         /// extern "C" WasmResult proxy_set_effective_context(uint32_t effective_context_id);
@@ -1103,8 +1034,8 @@ pub mod envoy {
         /// TODO(docs)
         pub fn proxy_define_metric(
             metric_type: MetricType,
-            name: *const u8,
-            name_len: Size,
+            name_ptr: *const u8,
+            name_len: usize,
             id: *mut MetricId,
         ) -> WasmResult;
         /// extern "C" WasmResult proxy_increment_metric(uint32_t metric_id, int64_t offset);
@@ -1131,12 +1062,12 @@ pub mod envoy {
         /// TODO(docs)
         pub fn proxy_send_local_response(
             response_code: u32,
-            response_code_details: *const u8,
-            response_code_details_len: Size,
-            body: *const u8,
-            body_len: Size,
-            additional_response_header_pairs: *const u8,
-            additional_response_header_pairs_len: Size,
+            response_code_details_ptr: *const u8,
+            response_code_details_len: usize,
+            body_ptr: *const u8,
+            body_len: usize,
+            additional_response_header_pairs_ptr: *const u8,
+            additional_response_header_pairs_len: usize,
             grpc_status: GrpcStatus,
         ) -> WasmResult;
         /// extern "C" WasmResult proxy_clear_route_cache();
@@ -1149,8 +1080,8 @@ pub mod envoy {
         /// Returns: Ok, NotFound
         /// TODO(docs)
         pub fn proxy_get_shared_data(
-            key: *const u8,
-            key_len: Size,
+            key_ptr: *const u8,
+            key_len: usize,
             value: *mut *mut u8,
             value_len: *mut Size,
             cas: *mut u32,
@@ -1162,10 +1093,10 @@ pub mod envoy {
         /// // Returns: Ok, CasMismatch
         /// TODO(docs)
         pub fn proxy_set_shared_data(
-            key: *const u8,
-            key_len: Size,
-            value: *const u8,
-            value_len: Size,
+            key_ptr: *const u8,
+            key_len: usize,
+            value_ptr: *const u8,
+            value_len: usize,
             cas: u32,
         ) -> WasmResult;
         /// SharedQueue
@@ -1176,8 +1107,8 @@ pub mod envoy {
         /// // proxy_dequeue_shared_queue. Returns: Ok
         /// TODO(docs)
         pub fn proxy_register_shared_queue(
-            queue_name: *const u8,
-            queue_name_len: Size,
+            queue_name_ptr: *const u8,
+            queue_name_len: usize,
             token: *mut Token,
         ) -> WasmResult;
         /// extern "C" WasmResult proxy_resolve_shared_queue(const char* vm_id, size_t vm_id_size,
@@ -1186,10 +1117,10 @@ pub mod envoy {
         /// // Returns: Ok, NotFound
         /// TODO(docs)
         pub fn proxy_resolve_shared_queue(
-            vm_id: *const u8,
-            vm_id_len: Size,
-            queue_name: *const u8,
-            queue_name_len: Size,
+            vm_id_ptr: *const u8,
+            vm_id_len: usize,
+            queue_name_ptr: *const u8,
+            queue_name_len: usize,
             token: *mut Token,
         ) -> WasmResult;
         /// extern "C" WasmResult proxy_dequeue_shared_queue(uint32_t token, const char** data_ptr,
@@ -1207,8 +1138,8 @@ pub mod envoy {
         /// TODO(docs)
         pub fn proxy_enqueue_shared_queue(
             token: Token,
-            data: *const u8,
-            data_len: Size,
+            data_ptr: *const u8,
+            data_len: usize,
         ) -> WasmResult;
         /// Headers/Trailers/Metadata Maps
         /// extern "C" WasmResult proxy_add_header_map_value(HeaderMapType type, const char* key_ptr,
@@ -1217,10 +1148,10 @@ pub mod envoy {
         /// TODO(docs)
         pub fn proxy_add_header_map_value(
             headers_type: HeadersType,
-            key: *const u8,
-            key_len: Size,
-            value: *const u8,
-            value_len: Size,
+            key_ptr: *const u8,
+            key_len: usize,
+            value_ptr: *const u8,
+            value_len: usize,
         ) -> WasmResult;
         /// extern "C" WasmResult proxy_get_header_map_value(HeaderMapType type, const char* key_ptr,
         ///                                                  size_t key_size, const char** value_ptr,
@@ -1228,8 +1159,8 @@ pub mod envoy {
         /// TODO(docs)
         pub fn proxy_get_header_map_value(
             headers_type: HeadersType,
-            key: *const u8,
-            key_len: Size,
+            key_ptr: *const u8,
+            key_len: usize,
             value: *mut *mut u8,
             value_len: *mut Size,
         ) -> WasmResult;
@@ -1245,8 +1176,8 @@ pub mod envoy {
         /// TODO(docs)
         pub fn proxy_set_header_map_pairs(
             headers_type: HeadersType,
-            buf: *const u8,
-            buf_len: Size,
+            buf_ptr: *const u8,
+            buf_len: usize,
         ) -> WasmResult;
         /// extern "C" WasmResult proxy_replace_header_map_value(HeaderMapType type, const char* key_ptr,
         ///                                                      size_t key_size, const char* value_ptr,
@@ -1254,18 +1185,18 @@ pub mod envoy {
         /// TODO(docs)
         pub fn proxy_replace_header_map_value(
             headers_type: HeadersType,
-            key: *const u8,
-            key_len: Size,
-            value: *const u8,
-            value_len: Size,
+            key_ptr: *const u8,
+            key_len: usize,
+            value_ptr: *const u8,
+            value_len: usize,
         ) -> WasmResult;
         /// extern "C" WasmResult proxy_remove_header_map_value(HeaderMapType type, const char* key_ptr,
         ///                                                     size_t key_size);
         /// TODO(docs)
         pub fn proxy_remove_header_map_value(
             headers_type: HeadersType,
-            key: *const u8,
-            key_len: Size,
+            key_ptr: *const u8,
+            key_len: usize,
         ) -> WasmResult;
         /// extern "C" WasmResult proxy_get_header_map_size(HeaderMapType type, size_t* size);
         /// TODO(docs)
@@ -1300,14 +1231,14 @@ pub mod envoy {
         ///                                       uint32_t* token_ptr);
         /// TODO(docs)
         pub fn proxy_http_call(
-            uri: *const u8,
-            uri_len: Size,
-            header_pairs: *const u8,
-            header_pairs_len: Size,
-            body: *const u8,
-            body_len: Size,
-            trailer_pairs: *const u8,
-            trailer_pairs_len: Size,
+            uri_ptr: *const u8,
+            uri_len: usize,
+            header_pairs_ptr: *const u8,
+            header_pairs_len: usize,
+            body_ptr: *const u8,
+            body_len: usize,
+            trailer_pairs_ptr: *const u8,
+            trailer_pairs_len: usize,
             timeout_ms: u32,
             token: *mut Token,
         ) -> WasmResult;
@@ -1319,14 +1250,14 @@ pub mod envoy {
         ///                                       uint32_t timeout_milliseconds, uint32_t* token_ptr);
         /// TODO(docs)
         pub fn proxy_grpc_call(
-            service: *const u8,
-            service_len: Size,
-            service_name: *const u8,
-            service_name_len: Size,
-            method_name: *const u8,
-            method_name_len: Size,
-            request: *const u8,
-            request_len: Size,
+            service_ptr: *const u8,
+            service_len: usize,
+            service_name_ptr: *const u8,
+            service_name_len: usize,
+            method_name_ptr: *const u8,
+            method_name_len: usize,
+            request_ptr: *const u8,
+            request_len: usize,
             timeout_ms: u32,
             token: *mut Token,
         ) -> WasmResult;
@@ -1336,12 +1267,12 @@ pub mod envoy {
         ///                                         uint32_t* token_ptr);
         /// TODO(docs)
         pub fn proxy_grpc_stream(
-            service: *const u8,
-            service_len: Size,
-            service_name: *const u8,
-            service_name_len: Size,
-            method_name: *const u8,
-            method_name_len: Size,
+            service_ptr: *const u8,
+            service_len: usize,
+            service_name_ptr: *const u8,
+            service_name_len: usize,
+            method_name_ptr: *const u8,
+            method_name_len: usize,
             token: *mut Token,
         ) -> WasmResult;
         /// extern "C" WasmResult proxy_grpc_cancel(uint32_t token);
@@ -1355,8 +1286,8 @@ pub mod envoy {
         /// TODO(docs)
         pub fn proxy_grpc_send(
             token: Token,
-            message: *const u8,
-            message_len: Size,
+            message_ptr: *const u8,
+            message_len: usize,
             end_stream: Boolean,
         ) -> WasmResult;
     }
