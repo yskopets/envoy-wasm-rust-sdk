@@ -164,13 +164,13 @@
 (typename $map_size u32)
 
 ;;; Unique identifier of a root/connection/request context.
-(typename $context_id u32)
+(typename $context_id (handle))
 
 ;;; Opaque identifier of an outgoing HTTP request, gRPC call, etc.
-(typename $token u32)
+(typename $token (handle))
 
 ;;; Metric handle.
-(typename $metric_id u32)
+(typename $metric_id (handle))
 
 ;;; Metric type.
 (typename $metric_type
