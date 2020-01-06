@@ -2,6 +2,8 @@
 
 * [Types](#types)
     * [`wasm_result`](#wasm_result)
+    * [`peer_type`](#peer_type)
+    * [`filter_status`](#filter_status)
     * [`filter_headers_status`](#filter_headers_status)
     * [`filter_data_status`](#filter_data_status)
     * [`filter_trailers_status`](#filter_trailers_status)
@@ -126,6 +128,35 @@ Internal failure: trying check logs of the surrounding system.
 
 #### `broken_connection`
 The connection/stream/pipe was broken/closed unexpectedly.
+
+
+## `peer_type`
+Peer type.
+
+Enum represented by `u32`
+
+### Variants:
+#### `unknown`
+Unknown.
+
+#### `local`
+Local.
+
+#### `remote`
+Remote.
+
+
+## `filter_status`
+Status codes returned by filters that can cause future filters to not get iterated to.
+
+Enum represented by `u32`
+
+### Variants:
+#### `continue`
+Continue to further filters.
+
+#### `stop_iteration`
+Stop executing further filters.
 
 
 ## `filter_headers_status`
@@ -517,7 +548,98 @@ TODO(docs)
 TODO(docs)
 #### Results:
 
+### proxy_on_new_connection
+Network calls.
+extern "C" FilterStatus proxy_on_new_connection(uint32_t context_id);
+TODO(docs)
+
+#### Parameters:
+##### `context_id`
+`context_id` has type `context_id`
+TODO(docs)
+#### Results:
+##### `status`
+`status` has type `filter_status`
+TODO(docs)
+
+### proxy_on_downstream_data
+extern "C" FilterStatus proxy_on_downstream_data(uint32_t context_id,
+                                                 uint32_t data_length,
+                                                 uint32_t end_of_stream);
+TODO(docs)
+
+#### Parameters:
+##### `context_id`
+`context_id` has type `context_id`
+TODO(docs)
+
+##### `data_len`
+`data_len` has type `size`
+TODO(docs)
+
+##### `end_of_stream`
+`end_of_stream` has type `boolean`
+TODO(docs)
+#### Results:
+##### `status`
+`status` has type `filter_status`
+TODO(docs)
+
+### proxy_on_upstream_data
+extern "C" FilterStatus proxy_on_upstream_data(uint32_t context_id,
+                                               uint32_t data_length,
+                                               uint32_t end_of_stream);
+TODO(docs)
+
+#### Parameters:
+##### `context_id`
+`context_id` has type `context_id`
+TODO(docs)
+
+##### `data_len`
+`data_len` has type `size`
+TODO(docs)
+
+##### `end_of_stream`
+`end_of_stream` has type `boolean`
+TODO(docs)
+#### Results:
+##### `status`
+`status` has type `filter_status`
+TODO(docs)
+
+### proxy_on_downstream_connection_close
+extern "C" void proxy_on_downstream_connection_close(uint32_t context_id,
+                                                     uint32_t peer_type);
+TODO(docs)
+
+#### Parameters:
+##### `context_id`
+`context_id` has type `context_id`
+TODO(docs)
+
+##### `peer`
+`peer` has type `peer_type`
+TODO(docs)
+#### Results:
+
+### proxy_on_upstream_connection_close
+extern "C" void proxy_on_upstream_connection_close(uint32_t context_id,
+                                                   uint32_t peer_type);
+TODO(docs)
+
+#### Parameters:
+##### `context_id`
+`context_id` has type `context_id`
+TODO(docs)
+
+##### `peer`
+`peer` has type `peer_type`
+TODO(docs)
+#### Results:
+
 ### proxy_on_request_headers
+HTTP calls.
 extern "C" FilterHeadersStatus proxy_on_request_headers(uint32_t context_id, uint32_t headers);
 TODO(docs)
 

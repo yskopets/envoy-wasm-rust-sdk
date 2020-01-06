@@ -33,6 +33,28 @@
   )
 )
 
+;;; Peer type.
+(typename $peer_type
+  (enum u32
+    ;;; Unknown.
+    $unknown
+    ;;; Local.
+    $local
+    ;;; Remote.
+    $remote
+  )
+)
+
+;;; Status codes returned by filters that can cause future filters to not get iterated to.
+(typename $filter_status
+  (enum u32
+    ;;; Continue to further filters.
+    $continue
+    ;;; Stop executing further filters.
+    $stop_iteration
+  )
+)
+
 ;;; Return codes for encode/decode headers filter invocations. The connection manager bases further
 ;;; filter invocations on the return code of the previous filter.
 (typename $filter_headers_status

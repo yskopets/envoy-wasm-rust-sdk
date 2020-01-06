@@ -31,6 +31,18 @@ pub const WASM_RESULT_RESULT_MISMATCH: WasmResult = 9;
 pub const WASM_RESULT_INTERNAL_FAILURE: WasmResult = 10;
 /// The connection/stream/pipe was broken/closed unexpectedly.
 pub const WASM_RESULT_BROKEN_CONNECTION: WasmResult = 11;
+pub type PeerType = u32;
+/// Unknown.
+pub const PEER_TYPE_UNKNOWN: PeerType = 0;
+/// Local.
+pub const PEER_TYPE_LOCAL: PeerType = 1;
+/// Remote.
+pub const PEER_TYPE_REMOTE: PeerType = 2;
+pub type FilterStatus = u32;
+/// Continue to further filters.
+pub const FILTER_STATUS_CONTINUE: FilterStatus = 0;
+/// Stop executing further filters.
+pub const FILTER_STATUS_STOP_ITERATION: FilterStatus = 1;
 pub type FilterHeadersStatus = u32;
 /// Continue filter chain iteration.
 pub const FILTER_HEADERS_STATUS_CONTINUE: FilterHeadersStatus = 0;
