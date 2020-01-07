@@ -48,6 +48,44 @@ pub extern fn proxy_on_create(context: envoy::ContextId, root_context: envoy::Co
 }
 
 #[no_mangle]
+pub extern fn proxy_on_new_connection(context: envoy::ContextId) -> envoy::FilterStatus {
+    unsafe {
+        envoy::proxy_log(envoy::LOG_LEVEL_INFO, &format!("proxy_on_new_connection( context={} )", context) ).unwrap();
+    }
+    envoy::FILTER_STATUS_CONTINUE
+}
+
+#[no_mangle]
+pub extern fn proxy_on_downstream_data(context: envoy::ContextId, data_len: envoy::Size, end_of_stream: envoy::Boolean) -> envoy::FilterStatus {
+    unsafe {
+        envoy::proxy_log(envoy::LOG_LEVEL_INFO, &format!("proxy_on_downstream_data( context={}, data_len={}, end_of_stream={} )", context, data_len, end_of_stream) ).unwrap();
+    }
+    envoy::FILTER_STATUS_CONTINUE
+}
+
+#[no_mangle]
+pub extern fn proxy_on_upstream_data(context: envoy::ContextId, data_len: envoy::Size, end_of_stream: envoy::Boolean) -> envoy::FilterStatus {
+    unsafe {
+        envoy::proxy_log(envoy::LOG_LEVEL_INFO, &format!("proxy_on_upstream_data( context={}, data_len={}, end_of_stream={} )", context, data_len, end_of_stream) ).unwrap();
+    }
+    envoy::FILTER_STATUS_CONTINUE
+}
+
+#[no_mangle]
+pub extern fn proxy_on_downstream_connection_close(context: envoy::ContextId, peer: envoy::PeerType) {
+    unsafe {
+        envoy::proxy_log(envoy::LOG_LEVEL_INFO, &format!("proxy_on_downstream_connection_close( context={}, peer={} )", context, peer) ).unwrap();
+    }
+}
+
+#[no_mangle]
+pub extern fn proxy_on_upstream_connection_close(context: envoy::ContextId, peer: envoy::PeerType) {
+    unsafe {
+        envoy::proxy_log(envoy::LOG_LEVEL_INFO, &format!("proxy_on_upstream_connection_close( context={}, peer={} )", context, peer) ).unwrap();
+    }
+}
+
+#[no_mangle]
 pub extern fn proxy_on_request_headers(context: envoy::ContextId, headers_count: envoy::MapSize) -> envoy::FilterHeadersStatus {
     unsafe {
         envoy::proxy_log(envoy::LOG_LEVEL_INFO, &format!("proxy_on_request_headers( context={}, headers_count={} )", context, headers_count) ).unwrap();
