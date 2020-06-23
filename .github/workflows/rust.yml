@@ -30,7 +30,7 @@ jobs:
     - name: Install Docker for Mac
       run: |
         brew cask install docker
-        sudo /Applications/Docker.app/Contents/MacOS/Docker --quit-after-install --unattended
+        /Applications/Docker.app/Contents/MacOS/Docker --quit-after-install --unattended
         /Applications/Docker.app/Contents/MacOS/Docker --unattended &
 
         while ! docker info 2>/dev/null ; do
