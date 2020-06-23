@@ -1,0 +1,41 @@
+name: Rust
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build
+      run: cargo build --verbose
+    - name: Run tests
+      run: cargo test --verbose
+
+  mac:
+
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Docker for Mac
+      run: |
+        brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask/b8c67034bd78f9585b1316564f223b97055bc0dc/Casks/docker.rb
+        /Applications/Docker.app/Contents/MacOS/Docker --quit-after-install --unattended
+        /Applications/Docker.app/Contents/MacOS/Docker --unattended &
+
+        while ! docker info 2>/dev/null ; do
+          sleep 5
+          echo "Waiting for docker service to be in the running state"
+        done
+        
+        docker run --rm -t busybox date
