@@ -29,7 +29,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install Docker for Mac
       run: |
-        brew cask install docker
+        brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask/b8c67034bd78f9585b1316564f223b97055bc0dc/Casks/docker.rb
         /Applications/Docker.app/Contents/MacOS/Docker --quit-after-install --unattended
         /Applications/Docker.app/Contents/MacOS/Docker --unattended &
 
